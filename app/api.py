@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import ClassVar
 
 import httpx
 
@@ -8,7 +9,7 @@ from app.logger import setup_logging
 
 
 class APIClient:
-    RETRY_STATUS_CODE = {
+    RETRY_STATUS_CODE: ClassVar[set[int]] = {
         408,
         425,
         429,
@@ -21,7 +22,11 @@ class APIClient:
     logger = logging.getLogger(__name__)
 
     def __init__(
-        self, base_url: str, retry_count: int = 3, retry_delay: float = 1.0, timeout: float = 10.0
+        self,
+        base_url: str,
+        retry_count: int = 3,
+        retry_delay: float = 1.0,
+        timeout: float = 10.0,
     ):
         self.base_url = base_url.rstrip("/")
         self.retry_count = retry_count

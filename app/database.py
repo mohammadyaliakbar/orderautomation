@@ -1,19 +1,21 @@
-import sqlite3
 import logging
+import sqlite3
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
+
 from app.logger import setup_logging
 from app.processor import Order
-from decimal import Decimal
 
 setup_logging()
-logger=logging.getLogger(__name__)
-DB_PATH=Path("data/orders.db")
+logger = logging.getLogger(__name__)
+DB_PATH = Path("data/orders.db")
+
 
 def init_db():
     """جدول لازم در صورت نبود می سازد. باید در ابتدای main.py صدا زده شود"""
-    DB_PATH.parent.mkdir(parents=True,exist_ok=True)
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     with get_connection() as conn:
         conn.execute(
@@ -36,9 +38,10 @@ def init_db():
         )
     logger.info(f"Database initialized at {DB_PATH}")
 
+
 @contextmanager
 def get_connection():
-    conn=sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
     try:
         yield conn
         conn.commit()
@@ -51,10 +54,14 @@ def get_connection():
 #         rows=conn.execute("SELECT order_id FROM seen_orders").fetchall()
 #     return {row[0] for row in rows}
 
+
 def get_order_status(order_id: int) -> str | None:
     with get_connection() as conn:
-        row=conn.execute("SELECT status FROM orders WHERE id = ?",(order_id,)).fetchone()
+        row = conn.execute(
+            "SELECT status FROM orders WHERE id = ?", (order_id,)
+        ).fetchone()
     return row[0] if row else None
+
 
 # def mark_order_seen(order_id: int, status: str):
 #     """یک سفارش را جدید ثبت می کند یا وضعیتش را به روزرسانی می کند"""
@@ -72,8 +79,9 @@ def get_order_status(order_id: int) -> str | None:
 #             (order_id, status, now, now),
 #         )
 
-def upsert_order(order:Order):
-    now=datetime.now().isoformat()
+
+def upsert_order(order: Order):
+    now = datetime.now(timezone.utc).isoformat()
 
     with get_connection() as conn:
         conn.execute(
@@ -103,8 +111,9 @@ def upsert_order(order:Order):
                 order.date.isoformat(),
                 now,
                 now,
-            )
+            ),
         )
+
 
 def get_orders_count() -> int:
 
@@ -112,10 +121,11 @@ def get_orders_count() -> int:
         row = conn.execute("SELECT COUNT(*) FROM orders").fetchone()
     return row[0]
 
+
 def get_total_sales() -> Decimal:
 
     with get_connection() as conn:
-        row= conn.execute(
+        row = conn.execute(
             "SELECT total FROM orders WHERE  status != 'cancelled'"
         ).fetchall()
-    return sum((Decimal(r[0]) for r in row),Decimal("0"))
+    return sum((Decimal(r[0]) for r in row), Decimal(0))

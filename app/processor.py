@@ -53,7 +53,9 @@ REQUIRED_FIELDS = (
 def clean_order(raw_order: dict) -> Order:
     missing = [field for field in REQUIRED_FIELDS if field not in raw_order]
     if missing:
-        raise InvalidOrderError(f"order {raw_order.get('id', '?')} has missing fileds: {missing}")
+        raise InvalidOrderError(
+            f"order {raw_order.get('id', '?')} has missing fileds: {missing}"
+        )
     try:
         order_id = int(raw_order["id"])
         product_id = int(raw_order["product_id"])
@@ -90,7 +92,9 @@ def clean_order(raw_order: dict) -> Order:
         raise InvalidOrderError(f"Order {order_id} has invalid total: {total}")
 
     if quantity <= 0:
-        raise InvalidOrderError(f"Order {order_id} has invalid quantity field {quantity}")
+        raise InvalidOrderError(
+            f"Order {order_id} has invalid quantity field {quantity}"
+        )
 
     return Order(
         id=order_id,
@@ -118,5 +122,7 @@ def clean_orders(raw_orders: dict) -> list[Order]:
             logger.warning(f"skipping invalid order : {error}")
             continue
 
-    logger.info(f"Proccessed {len(clean_list)} valid orders out of : {len(response_orders)}")
+    logger.info(
+        f"Proccessed {len(clean_list)} valid orders out of : {len(response_orders)}"
+    )
     return clean_list
