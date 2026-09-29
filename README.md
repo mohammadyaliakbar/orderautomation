@@ -4,6 +4,8 @@
 
 **پایش خودکار سفارش‌ها، اعتبارسنجی داده و اطلاع‌رسانی لحظه‌ای در تلگرام**
 
+![CI](https://github.com/mohammadyaliakbar/orderautomation/actions/workflows/ci.yml/badge.svg)
+
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Notifications-Telegram-26A5E4?logo=telegram&logoColor=white)
